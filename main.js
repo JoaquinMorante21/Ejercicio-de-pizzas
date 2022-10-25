@@ -1,115 +1,143 @@
-const Pizzas = [
+const pizzas = [
   {
     nombre: "mozzarella",
     id: 1,
     ingredientes: ["tomate", "mozzarella"],
     precio: 550,
+    imagen: "./img/bc88d440af7e6fd3182954975306f790.png",
   },
   {
     nombre: "cuatroQuesos",
     id: 2,
     ingredientes: ["mozzarella", "gorgonzola", "fontina", "parmesano"],
     precio: 800,
+    imagen: "./img/pizza-4-quesos-g.png",
   },
   {
     nombre: "napolitana",
     id: 3,
     ingredientes: ["tomate", "mozzarella"],
     precio: 750,
+    imagen: "./img/Pizza-Napolitana.png",
   },
   {
     nombre: "margarita",
     id: 4,
     ingredientes: ["tomate", "mozzarella", "albahacafresca", "sal", "aceite"],
     precio: 610,
+    imagen: "./img/margarita.png",
   },
   {
     nombre: "pepperoni",
     id: 5,
     ingredientes: ["tomate", "mozzarella", "pepperoni"],
     precio: 860,
+    imagen: "./img/pizzapng.parspng.com-2.png",
   },
   {
     nombre: "marinera",
     id: 6,
     ingredientes: ["tomate", "ajo", "orégano", "aceite", "queso", "mozzarella"],
     precio: 680,
+    imagen: "./img/marinera.png",
   },
   {
     id: 7,
     nombre: "Panceta",
     ingredientes: ["Queso", "Orégano", "Panceta", "Aceitunas"],
     precio: 700,
+    imagen: "https://i.pinimg.com/originals/bc/88/d4/bc88d440af7e6fd3182954975306f790.png",
   },
 ];
 
+/* resultContainer.innerHTML = `
+    <div class="pizza-container">
+    <img src="${imagen}" alt="${nombre}" class="pizza">
+      <h2 class="result-title">${pizza.nombre.toUpperCase()}</h2>
+     <h3 class="result-price"> Precio: $${pizza.precio} 🍕</h3>
+     <h3 class="result-ingredientes">Ingredientes:${pizza.ingredientes}</h3>
+     <p>Busca otro número de pizza para ver si la tenemos.</p>
+     </div>
+    `; */
 
+
+/* Elementos del DOM */
+
+const resultContainer = document.getElementById("result-container");
 const form = document.getElementById("form");
-const input = document.getElementById("input");
-const list = document.getElementById("list");
-let tasks = [];
+const input = document.querySelector(".form__input");
 
 
-const createTask = (task) =>
-  `
-    <li class="card blue">
-        <h2>🍕${task.nombre}</h2>
-        <h3>$${task.precio}</h3>
-    </li>
-`;
+const saveToLocalStorage = () => {
+  return !localStorage.getItem("pizzas")
+    ? localStorage.setItem("pizzas", JSON.stringify(pizzas))
+    : null;
+};
 
-const wrongId = (pizza) =>
-  `
-    <li class="card red">
-        <h2>El Id ${pizza.id} no coincide con ninguna pizza</h2>
-    </li>
-`;
+/* Buscamos en el array de pizzas una pizza cuyo id coincida con el numero del input. Retornará undefined si no existe dicho número */
+const searchPizza = (value) => pizzas.find((pizza) => pizza.id === value);
 
-const noNumber = () =>
-  `
-    <li class="card red">
-        <h2>Ingrese un numero por favor</h2>
-    </li>
-`;
+/* Funcion para renderizar la card */
+const renderCard = (pizza) => {
+  const { nombre, precio, ingredientes, imagen } = pizza;
 
+  return `
+  <div class="card">
+  <img src="${imagen}" alt="${nombre}" class="pizza">
+  <div class="card__info">
+      <h2 class="result-title">${nombre.toUpperCase()}</h2>
+      <h3 class="result-price"> Precio: $${pizza.precio} 🍕</h3>
+     <h3 class="result-ingredientes">Ingredientes:${pizza.ingredientes}</h3>
+     <p>Busca otro número de pizza para ver si la tenemos.</p>
+  </div>
+</div>
+  `;
+};
 
-const decider = (pizza) => {
-  
-  if (pizza == undefined) {
-    return noNumber();
-  } else if (pizza.id < 0 || pizza.id > 7) {
-    return wrongId(pizza);
+/* Función para mostrar un error en caso de que no hayamos colocado nada en el input y activemos el evento submit */
+const showEmptyError = () => {
+  resultContainer.innerHTML = `
+    <div class="pizza-container">
+    <i class="fa-solid fa-triangle-exclamation error"></i>
+    <h2 class="error-title"> Por favor, ingrese un número para que podamos buscar su pizza en el menú. </h2>
+    </div>`;
+};
+
+/* Función para renderizar el resultado de la busqueda. Lo que se renderice dependerá de si se encontro una pizza con el id dado o no. */
+const renderResult = (pizza) => {
+  if (!pizza) {
+    resultContainer.innerHTML = `
+    <div class="pizza-container">
+    <i class="fa-solid fa-triangle-exclamation error"></i>
+    <h2 class="error-title"> No existe una pizza con el id ingresado. </h2>
+    <p>Realice una nueva busqueda.</p>
+    </div>`;
   } else {
-    return createTask(pizza);
+    resultContainer.innerHTML = renderCard(pizza);
   }
 };
 
+/* Función que se ejecutará al darse el evento "submit". 
+1- Guardamos el valor del input en una variable.
+2- Si el valor es undefined (debido a lo que devuelve el método find), mostramos un error.
+3- Si el valor no es undefined, guardamos la pizza encontrada.
+*/
 
-renderTask = (TodoList) => {
-  list.innerHTML = TodoList.map((pizza) => decider(pizza)).join("");
-};
-
-
-const nuevoObjeto = (n) => {
-  if (Number(n) < 0 || Number(n) > 7) {
-    return Pizzas.push({ id: Number(n), nombre: "n" });
-  } else {
+const submitSearch = (e) => {
+  e.preventDefault();
+  const searchedValue = input.value;
+  if (!searchedValue) {
+    showEmptyError(searchedValue);
     return;
   }
+  const searchedPizza = searchPizza(Number(searchedValue));
+  renderResult(searchedPizza);
 };
 
+/* Función inicializadora */
 const init = () => {
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const task = input.value;
-    input.value = "";
-   
-    nuevoObjeto(task);
-
-  
-    const thisPizza = Pizzas.filter((Pizza) => Pizza.id == task);
-    tasks = [...tasks, thisPizza[0]];
-    renderTask(tasks);
-  });
+  saveToLocalStorage();
+  form.addEventListener("submit", submitSearch);
 };
+
 init();

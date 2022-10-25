@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,15 +8,29 @@
     <title>Pizza Js</title>
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
-    <section class="container">
-        <h1>Ingresar numero de tu pizza</h1>
-        <form class="form" id="form">
-            <input class= "input-number"type="number" id="input">
-            <button class="input-form" type="submit" id="input-form">Enviar</button>
+        <h1>Bienvenido a PizzaJs Ingresa un numero y te daremos una Pizza!</h1>
+        <form id="form">
+            <div class="busqueda">
+                <div class="input-container">
+                    <input class="form__input" type="number" placeholder="Ingrese un numero">
+                </div>
+
+                <button class="form__btn" type="submit">Buscar</button>
+
+            </div>
+
+
         </form>
-    </section>
-    <ul class="list" id="list"></ul>
+
+        <section id="result-container">
+
+        </section>
+    
     <script src="./main.js"> </script>
 </body>
+
 </html>
+
+
